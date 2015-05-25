@@ -1,0 +1,97 @@
+Option Explicit On
+Option Strict On
+
+Public Class PaymentEstimatorForm
+
+    Private year As Integer
+
+    Private Sub PaymentEstimatorForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        principalTextBox.Focus()
+
+    End Sub
+
+    Private Sub PaymentEstimatorForm_Active(sender As Object, e As EventArgs) Handles MyBase.Activated
+        'Clears the payment text box and sets the text in the client label
+        'to match the client variable when the form is activated.
+
+        paymentTextBox.Clear()
+
+        clientLabel.Text = client
+
+    End Sub
+
+    Private Sub oneYearRadioButton_CheckedChanged(sender As Object, e As EventArgs) Handles oneYearRadioButton.CheckedChanged
+        'Sets the year variable to 1 when the 1-year radio button is checked.
+
+        year = 1
+
+        calculatePaymentButton.Enabled = True
+
+        paymentTextBox.Clear()
+
+    End Sub
+
+    Private Sub tenYearRadioButton_CheckedChanged(sender As Object, e As EventArgs) Handles tenYearRadioButton.CheckedChanged
+        'Sets the year variable to 10 when the 10-year radio button is checked.
+
+        year = 10
+
+        calculatePaymentButton.Enabled = True
+
+        paymentTextBox.Clear()
+
+    End Sub
+
+    Private Sub thirtyYearRadioButton_CheckedChanged(sender As Object, e As EventArgs) Handles thirtyYearRadioButton.CheckedChanged
+        'Sets the year variable to 30 when the 30-year radio button is checked.
+
+        year = 30
+
+        calculatePaymentButton.Enabled = True
+
+        paymentTextBox.Clear()
+
+    End Sub
+
+    Private Sub calculatePaymentButton_Click(sender As Object, e As EventArgs) Handles calculatePaymentButton.Click
+
+        Dim principal, interestRate, payment As Double
+        Dim colStr As String = "{0,3}{1,-12}{2,12}"
+        Dim colStr2 As String = "{0,3}{1,-12}{2,14}"
+
+        Try
+            principal = Convert.ToDouble(principalTextBox.Text.Replace("$", ""))
+            interestRate = Convert.ToDouble(interestRateTextBox.Text.Replace("%", "")) / 100
+
+        Catch fe As FormatException
+            MessageBox.Show("Please enter a valid principal and/or interest rate", "Invalid Principal/Interest Rate")
+            Exit Sub
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Unexpected Error")
+            Exit Sub
+
+        End Try
+
+        If principal < 0 Or principal > 300000 Then
+            MessageBox.Show("Please enter a value between $0 and $300,000 for the principal", "Invalid Principal")
+            Exit Sub
+
+        ElseIf interestRate < 0 Or interestRate > 0.12 Then
+            MessageBox.Show("Please enter a value between 0% and 12% for the interest rate", "Invalid Interest Rate")
+            Exit Sub
+
+        End If
+
+        payment = -Financial.Pmt((interestRate / 12), (year * 12), principal)
+
+        paymentTextBox.Text = String.Format(colStr2, "", "Sample", "Resulting") & vbNewLine
+        paymentTextBox.AppendText(String.Format(colStr, "", "Interest", "Monthly") & vbNewLine)
+        paymentTextBox.AppendText(String.Format(colStr, "", "Rate", "Payment") & vbNewLine)
+        paymentTextBox.AppendText(String.Format(colStr2, "", "--------", "---------") & vbNewLine)
+        paymentTextBox.AppendText(String.Format(colStr, "", interestRate.ToString("P2"), payment.ToString("C2")) & vbNewLine)
+
+    End Sub
+
+End Class
