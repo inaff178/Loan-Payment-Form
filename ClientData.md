@@ -1,0 +1,33 @@
+# Loan-Payment-Form - Client Data
+
+Option Explicit On
+Option Strict On
+
+Public Class LoanCalculatorForm
+
+    Private Sub fillOutDataButton_Click(sender As Object, e As EventArgs) Handles fillOutDataButton.Click
+
+        Try
+            client = clientTextBox.Text
+
+            If client = "" Then
+                MessageBox.Show("Please enter a client name", "No Client Name Entered")
+                Exit Sub
+
+            End If
+
+        Catch fe As FormatException
+            MessageBox.Show("Please enter a valid client name", "Invalid Client Name")
+            Exit Sub
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Unexpected Error")
+            Exit Sub
+
+        End Try
+
+        PaymentEstimatorForm.ShowDialog()
+
+    End Sub
+
+End Class
